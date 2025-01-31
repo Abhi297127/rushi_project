@@ -10,3 +10,4 @@ PyGithub
 email-validator
 phonenumbers
 cloudinary
+bcrypt
