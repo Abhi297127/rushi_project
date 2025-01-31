@@ -7,3 +7,4 @@ requests
 altair
 streamlit-lottie
 PyGithub
+bcrypt
