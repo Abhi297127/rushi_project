@@ -7,4 +7,6 @@ requests
 altair
 streamlit-lottie
 PyGithub
-bcrypt
+validate-email-address
+phonenumbers
+cloudinary
