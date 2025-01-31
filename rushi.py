@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from validate_email import validate_email
+from email_validator import validate_email
 import phonenumbers
 import logging
 from typing import Optional, Dict, Any
