@@ -1,0 +1,9 @@
+streamlit
+pymongo
+plotly
+pandas
+numpy
+requests
+altair
+streamlit-lottie
+PyGithub
