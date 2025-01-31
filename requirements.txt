@@ -7,6 +7,6 @@ requests
 altair
 streamlit-lottie
 PyGithub
-validate-email-address
+email-validator
 phonenumbers
 cloudinary
