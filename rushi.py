@@ -444,7 +444,7 @@ class UserDashboard:
                 result = cloudinary.api.resources(
                     type='upload',  # Fetch uploaded resources
                     prefix='abhi/',  # Replace with your folder path in Cloudinary
-                    max_results=100,  # Limit the number of results
+                    max_results=500,  # Limit the number of results
                     resource_type='image'  # Fetch only images
                 )
             except cloudinary.api.Error as api_error:
