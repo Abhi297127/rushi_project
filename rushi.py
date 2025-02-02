@@ -434,7 +434,9 @@ class UserDashboard:
 
     def _show_photos(self):
         st.subheader("Photo Gallery")
-        
+        # Add refresh button
+        if st.button("🔄 Refresh Gallery"):
+            st.rerun()  # This will reload the entire app
         try:
             # First verify Cloudinary connection
             self._verify_cloudinary_credentials()
