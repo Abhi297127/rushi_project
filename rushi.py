@@ -434,9 +434,43 @@ class UserDashboard:
 
     def _show_photos(self):
         st.subheader("Photo Gallery")
+        
         # Add refresh button
         if st.button("🔄 Refresh Gallery"):
-            st.rerun()  # This will reload the entire app
+            st.rerun()
+
+        # Add JavaScript protection
+        st.markdown("""
+            <script>
+                // Disable right-click
+                document.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                });
+
+                // Disable keyboard shortcuts
+                document.addEventListener('keydown', function(e) {
+                    // Prevent common screenshot shortcuts
+                    if (
+                        (e.ctrlKey && (e.key === 'p' || e.key === 'P' || e.key === 's' || e.key === 'S')) ||
+                        (e.key === 'PrintScreen') ||
+                        (e.metaKey && (e.key === 'p' || e.key === 'P' || e.key === 's' || e.key === 'S'))
+                    ) {
+                        e.preventDefault();
+                    }
+                });
+
+                // Detect screen capture API
+                if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+                    navigator.mediaDevices.getDisplayMedia({ video: true }).then(function(stream) {
+                        stream.getTracks().forEach(function(track) {
+                            track.stop();
+                        });
+                        alert("Screen recording is not allowed!");
+                    });
+                }
+            </script>
+        """, unsafe_allow_html=True)
+
         try:
             # First verify Cloudinary connection
             self._verify_cloudinary_credentials()
@@ -444,10 +478,10 @@ class UserDashboard:
             # Fetch images with better error handling
             try:
                 result = cloudinary.api.resources(
-                    type='upload',  # Fetch uploaded resources
-                    prefix='abhi/',  # Replace with your folder path in Cloudinary
-                    max_results=500,  # Limit the number of results
-                    resource_type='image'  # Fetch only images
+                    type='upload',
+                    prefix='abhi/',
+                    max_results=500,
+                    resource_type='image'
                 )
             except cloudinary.api.Error as api_error:
                 logger.error(f"Cloudinary API error: {str(api_error)}")
@@ -462,31 +496,44 @@ class UserDashboard:
                 st.info("No media files found in the gallery.")
                 return
             
-            # Display images in a grid view
-            cols = st.columns(3)  # Create 3 columns for the grid
+            # Display images in a grid view with protection
+            cols = st.columns(3)
             
             for idx, resource in enumerate(result['resources']):
-                with cols[idx % 3]:  # Distribute images across columns
+                with cols[idx % 3]:
                     try:
                         public_id = resource.get('public_id', '')
                         format = resource.get('format', '')
                         
-                        # Generate URL for the image in its original size
+                        # Generate protected URL for the image
                         original_image_url, options = cloudinary_url(
                             public_id,
                             format=format,
-                            # No width, height, or crop parameters
+                            secure=True,
                         )
                         
-                        # Display the image in its original size
-                        st.image(original_image_url, use_container_width=False)
+                        # Display the image with protection
+                        st.markdown(f"""
+                            <div class="protected-image" 
+                                style="user-select: none; 
+                                        pointer-events: none; 
+                                        -webkit-user-select: none; 
+                                        -khtml-user-select: none; 
+                                        -moz-user-select: none; 
+                                        -ms-user-select: none;">
+                                <img src="{original_image_url}" 
+                                    style="width: 100%; 
+                                            pointer-events: none; 
+                                            -webkit-touch-callout: none;"
+                                    draggable="false"
+                                    oncontextmenu="return false;"
+                                />
+                            </div>
+                        """, unsafe_allow_html=True)
                         
-                        # Add file information and controls
-                        display_name = public_id.split('/')[-1]
-                        col_a = st.columns([2, 1])
-                        with col_a:
-                            st.caption(display_name)
-                        
+                        # Add file information
+                        # display_name = public_id.split('/')[-1]
+                        # st.caption(display_name)
                     
                     except Exception as img_error:
                         logger.error(f"Error displaying media: {str(img_error)}")
@@ -494,8 +541,7 @@ class UserDashboard:
 
         except Exception as e:
             logger.error(f"Gallery error: {str(e)}")
-            st.error("Error loading media gallery. Please try again later.")    
-    
+            st.error("Error loading media gallery. Please try again later.")
     def _show_dashboard(self):
             st.subheader("Your Activity")
             
